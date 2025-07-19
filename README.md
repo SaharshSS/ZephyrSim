@@ -1,5 +1,6 @@
 <p align="center">
-  <img src="https://dummyimage.com/1000x250/003366/ffffff&text=ZephyrSim" alt="ZephyrSim Banner" />
+  <img src="[https://dummyimage.com/1000x250/003366/ffffff&text=ZephyrSim" alt="ZephyrSim Banner](https://raw.githubusercontent.com/yourusername/zephyrsim/main/media/zephyrsim-banner.png
+)" />
 </p>
 
 <p align="center">
