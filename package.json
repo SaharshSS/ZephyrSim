@@ -1,9 +1,12 @@
 {
   "name": "ZephyrSim",
-  "version": "0.1.2",
+  "version": "0.1.0",
   "packageManager": "yarn@4.9.1",
   "scripts": {
     "release": "standard-version"
+  },
+  "standard-version": {
+    "tagPrefix": "zephyr-v"
   },
   "devDependencies": {
     "standard-version": "^9.5.0"
