@@ -1,0 +1,151 @@
+#usda 1.0
+(
+    "ZephyrSim Main Stage"
+    defaultPrim = "World"
+    upAxis = "Y"
+)
+
+def Xform "World" (
+    kind = "group"
+)
+{
+    # Reference the open field environment
+    def "OpenField" (
+        prepend references = @./environments/open_field.usd@
+    )
+    {
+    }
+    
+    # Add a drone instance
+    def "Drone" (
+        prepend references = @./assets/drone.usd@
+    )
+    {
+        double3 xformOp:translate = (0, 5, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+    
+    # Add wind zones
+    def "WindZone1" (
+        prepend references = @./assets/wind_zone.usd@
+    )
+    {
+        double3 xformOp:translate = (20, 10, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+    
+    def "WindZone2" (
+        prepend references = @./assets/wind_zone.usd@
+    )
+    {
+        double3 xformOp:translate = (-15, 15, 30)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+    
+    # Add bird instances
+    def "Bird1" (
+        prepend references = @./assets/bird.usd@
+    )
+    {
+        double3 xformOp:translate = (10, 8, 15)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+    
+    def "Bird2" (
+        prepend references = @./assets/bird.usd@
+    )
+    {
+        double3 xformOp:translate = (-5, 12, -10)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+    
+    def "Bird3" (
+        prepend references = @./assets/bird.usd@
+    )
+    {
+        double3 xformOp:translate = (25, 6, 25)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+    
+    # Physics settings
+    def PhysicsScene "physicsScene" (
+        prepend apiSchemas = ["PhysxSceneAPI"]
+    )
+    {
+        float3 gravityDirection = (0, -1, 0)
+        float gravityMagnitude = 9.81
+        float bounceThresholdVelocity = 0.2
+        float contactOffset = 0.02
+        float restOffset = 0.001
+        float maxContactImpulse = 1e+20
+        float maxBiasCoefficient = 0.8
+        float bounceThresholdVelocity = 0.2
+        float frictionCorrelationDistance = 0.025
+        float solverType = 1
+        uint32 solverPositionIterationCount = 4
+        uint32 solverVelocityIterationCount = 1
+        float wakeCounterResetValue = 0.5
+        bool enableGPUDynamics = false
+        uint32 broadphaseType = 0
+        uint32 broadphaseNumRegions = 1
+        uint32 broadphaseMaxRegionsPerPartition = 2
+        uint32 broadphaseMaxBounds = 0
+        uint32 broadphaseNumBuckets = 2
+        uint32 broadphaseNumObjectsPerBucket = 8
+        float broadphaseSorting = 0
+        uint32 broadphaseNumPhantoms = 0
+        float broadphaseNumSpheres = 0
+        uint32 broadphaseNumBoxes = 0
+        uint32 broadphaseNumCapsules = 0
+        uint32 broadphaseNumPlanes = 0
+        uint32 broadphaseNumConvexes = 0
+        uint32 broadphaseNumTriMeshes = 0
+        uint32 broadphaseNumHeightFields = 0
+        uint32 broadphaseNumShapes = 0
+        uint32 broadphaseNumAggregates = 0
+        uint32 broadphaseNumPairs = 0
+        uint32 broadphaseNumObjects = 0
+        uint32 broadphaseNumOverlaps = 0
+        uint32 broadphaseNumBounds = 0
+        uint32 broadphaseNumRegions = 1
+        uint32 broadphaseMaxRegionsPerPartition = 2
+        uint32 broadphaseMaxBounds = 0
+        uint32 broadphaseNumBuckets = 2
+        uint32 broadphaseNumObjectsPerBucket = 8
+        float broadphaseSorting = 0
+        uint32 broadphaseNumPhantoms = 0
+        float broadphaseNumSpheres = 0
+        uint32 broadphaseNumBoxes = 0
+        uint32 broadphaseNumCapsules = 0
+        uint32 broadphaseNumPlanes = 0
+        uint32 broadphaseNumConvexes = 0
+        uint32 broadphaseNumTriMeshes = 0
+        uint32 broadphaseNumHeightFields = 0
+        uint32 broadphaseNumShapes = 0
+        uint32 broadphaseNumAggregates = 0
+        uint32 broadphaseNumPairs = 0
+        uint32 broadphaseNumObjects = 0
+        uint32 broadphaseNumOverlaps = 0
+        uint32 broadphaseNumBounds = 0
+    }
+    
+    # Lighting
+    def DistantLight "Sun" (
+        prepend apiSchemas = ["ShapingAPI"]
+    )
+    {
+        float angle = 1
+        color3f color = (1, 1, 1)
+        float exposure = 0
+        float intensity = 15000
+        float3 normal = (0, 0, -1)
+        float radius = 0.5
+        float shaping:cone:angle = 180
+        float shaping:cone:softness
+        float shaping:focus
+        color3f shaping:focusTint
+        asset shaping:ies:file
+        float3 xformOp:rotateXYZ = (315, 0, 45)
+        uniform token[] xformOpOrder = ["xformOp:rotateXYZ"]
+    }
+} 
