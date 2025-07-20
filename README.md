@@ -1,3 +1,5 @@
+![status](https://img.shields.io/badge/status-WIP-yellow.svg)
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/SaharshSS/zephyrsim/main/media/zephyrsim-banner.png" alt="ZephyrSim Logo" />
 </p>
