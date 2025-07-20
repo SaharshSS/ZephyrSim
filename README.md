@@ -3,14 +3,14 @@
 </p>
 
 <p align="center">
-  <b>Simulate drone flight through wind, birds, GPS, and airspace—powered by NVIDIA Omniverse and OpenUSD.</b>
+  <b>Simulate drone flight through wind, GPS, and airspace—powered by NVIDIA Omniverse and OpenUSD.</b>
 </p>
 
 ---
 
 ## 🌬️ ZephyrSim
 
-**ZephyrSim** is an open-source drone simulation environment built in **NVIDIA Omniverse** and **OpenUSD**. It focuses on realistic aerial navigation through dynamic environments with wind, bird traffic, planes, and GPS imperfections—ideal for testing autonomous flight logic and perception systems.
+**ZephyrSim** is an open-source drone simulation environment built in **NVIDIA Omniverse** and **OpenUSD**. It focuses on realistic aerial navigation through dynamic environments with wind, planes, and GPS imperfections—ideal for testing autonomous flight logic and perception systems.
 
 ---
 
@@ -18,7 +18,6 @@
 
 - 🛰️ Realistic drone flight with simulated GPS & IMU
 - 🌪️ Configurable wind zones and turbulence fields
-- 🕊️ Dynamic bird agents with obstacle interactions
 - ✈️ Simulated airspace with moving planes
 - 🎮 Path-planning with Python scripting
 - 📷 Sensor support: RGB camera, depth, LIDAR, and noise modeling
@@ -43,3 +42,4 @@ cd zephyrsim
 
 # Launch Isaac Sim and run the control script
 ./python.sh scripts/fly_to_waypoints.py
+```

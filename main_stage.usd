@@ -42,31 +42,6 @@ def Xform "World" (
         uniform token[] xformOpOrder = ["xformOp:translate"]
     }
     
-    # Add bird instances
-    def "Bird1" (
-        prepend references = @./assets/bird.usd@
-    )
-    {
-        double3 xformOp:translate = (10, 8, 15)
-        uniform token[] xformOpOrder = ["xformOp:translate"]
-    }
-    
-    def "Bird2" (
-        prepend references = @./assets/bird.usd@
-    )
-    {
-        double3 xformOp:translate = (-5, 12, -10)
-        uniform token[] xformOpOrder = ["xformOp:translate"]
-    }
-    
-    def "Bird3" (
-        prepend references = @./assets/bird.usd@
-    )
-    {
-        double3 xformOp:translate = (25, 6, 25)
-        uniform token[] xformOpOrder = ["xformOp:translate"]
-    }
-    
     # Physics settings
     def PhysicsScene "physicsScene" (
         prepend apiSchemas = ["PhysxSceneAPI"]
