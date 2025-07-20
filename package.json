@@ -1,6 +1,6 @@
 {
   "name": "ZephyrSim",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "packageManager": "yarn@4.9.1",
   "scripts": {
     "release": "standard-version"
