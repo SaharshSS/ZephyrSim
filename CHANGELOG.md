@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.2](https://github.com/SaharshSS/ZephyrSim/compare/v0.1.1...v0.1.2) (2025-07-20)
+
+
+### Bug Fixes
+
+* fix wind assets ([97d8ba1](https://github.com/SaharshSS/ZephyrSim/commit/97d8ba1e1af23b8c829079b156ceaf686c1d6dd1))
+
 ### 0.1.1 (2025-07-20)
 
 
