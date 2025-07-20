@@ -1,6 +1,10 @@
 {
   "name": "ZephyrSim",
   "packageManager": "yarn@4.9.1",
+  "scripts": {
+    "release": "standard-version"
+  },
+
   "devDependencies": {
     "standard-version": "^9.5.0"
   }
