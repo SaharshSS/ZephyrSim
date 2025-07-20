@@ -8,6 +8,13 @@ def Xform "WindZone" (
     kind = "component"
 )
 {
+    # Wind zone parameters
+    float wind_speed = 5.0  # m/s
+    float3 wind_direction = (1, 0, 0)  # Normalized direction vector
+    float turbulence_intensity = 0.1  # 0-1 scale
+    float wind_gust_frequency = 0.5  # Hz
+    float wind_gust_amplitude = 2.0  # m/s
+    
     def Mesh "WindVolume" (
         prepend apiSchemas = ["PhysicsCollisionAPI"]
     )
@@ -34,6 +41,17 @@ def Xform "WindZone" (
         {
             float height = 8
             float radius = 0.1
+            color3f[] primvars:displayColor = [(0.1, 0.4, 0.6)]
+        }
+        
+        def Cone "WindArrowHead" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            double3 xformOp:translate = (4, 0, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+            float height = 0.5
+            float radius = 0.2
             color3f[] primvars:displayColor = [(0.1, 0.4, 0.6)]
         }
     }
@@ -70,6 +88,77 @@ def Xform "WindZone" (
             uniform token[] xformOpOrder = ["xformOp:translate"]
             float radius = 0.05
             color3f[] primvars:displayColor = [(0.3, 0.7, 0.9)]
+        }
+        
+        def Sphere "Particle4" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            double3 xformOp:translate = (2, 0.5, -0.5)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+            float radius = 0.05
+            color3f[] primvars:displayColor = [(0.3, 0.7, 0.9)]
+        }
+        
+        def Sphere "Particle5" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            double3 xformOp:translate = (-2, -0.5, 0.5)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+            float radius = 0.05
+            color3f[] primvars:displayColor = [(0.3, 0.7, 0.9)]
+        }
+    }
+    
+    def Xform "WindSpeedIndicator" (
+        prepend apiSchemas = ["PhysicsCollisionAPI"]
+    )
+    {
+        double3 xformOp:translate = (0, 0, 3)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        
+        def Cylinder "SpeedBar" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            float height = 2
+            float radius = 0.05
+            color3f[] primvars:displayColor = [(0.8, 0.2, 0.2)]
+        }
+        
+        def Sphere "SpeedIndicator" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            double3 xformOp:translate = (0, 0.5, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+            float radius = 0.1
+            color3f[] primvars:displayColor = [(1.0, 0.0, 0.0)]
+        }
+    }
+    
+    def Xform "TurbulenceIndicator" (
+        prepend apiSchemas = ["PhysicsCollisionAPI"]
+    )
+    {
+        double3 xformOp:translate = (0, 0, -3)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        
+        def Sphere "TurbulenceSphere" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            float radius = 0.8
+            color3f[] primvars:displayColor = [(0.8, 0.8, 0.2, 0.5)]
+        }
+        
+        def Sphere "TurbulenceCore" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            float radius = 0.3
+            color3f[] primvars:displayColor = [(1.0, 1.0, 0.0)]
         }
     }
 } 
