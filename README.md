@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/SaharshSS/zephyrsim/main/media/zephyrsim-banner.png" alt="ZephyrSim Logo" />
+  <img src="https://raw.githubusercontent.com/SaharshSS/ZephyrSim/main/media/zephyrsim-banner.png" alt="ZephyrSim Logo" />
 </p>
 
 <p align="center">
