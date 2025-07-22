@@ -1,4 +1,6 @@
 # wind_tuning.py
+import numpy as np
+
 def tune_wind(controller):
     for zone in controller.wind_zones.values():
         zone.set_wind_speed(10.0)
@@ -14,3 +16,9 @@ def tune_wind(controller):
         zone.shear_y = 12.0
         zone.shear_thickness = 3.0
         zone.shear_vector = np.array([2.0, 0, 1.0])
+        # Tornado!
+        zone.tornado_enabled = True
+        zone.tornado_center = np.array([10, 0, 10])  # Place tornado at (10, 0, 10)
+        zone.tornado_radius = 8.0
+        zone.tornado_strength = 40.0
+        zone.tornado_updraft = 20.0

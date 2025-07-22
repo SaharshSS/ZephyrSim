@@ -49,6 +49,13 @@ class WindZone:
         self.turbulence_scale = 1.0
         self.turbulence_time = 0.0
         
+        # Tornado parameters
+        self.tornado_center = np.array([0, 0, 0])
+        self.tornado_radius = 5.0         # meters (radius of max wind)
+        self.tornado_strength = 30.0      # max tangential wind speed (m/s)
+        self.tornado_updraft = 15.0       # max updraft in center (m/s)
+        self.tornado_enabled = False      # enable/disable tornado
+        
     def set_wind_speed(self, speed):
         """Set wind speed in m/s"""
         self.wind_speed = max(0.0, speed)
@@ -96,8 +103,11 @@ class WindZone:
         # Add turbulence
         turbulence_wind = self._calculate_turbulence(position, dt)
         
+        # Add tornado wind if enabled
+        tornado_wind = self._calculate_tornado(position)
+        
         # Combine all wind components
-        total_wind = base_wind + gust_wind + turbulence_wind
+        total_wind = base_wind + gust_wind + turbulence_wind + tornado_wind
         
         # Apply distance falloff (wind decreases at zone edges)
         falloff = 1.0 - (distance / self.size) ** 2
@@ -153,6 +163,35 @@ class WindZone:
         turbulence = np.array([x_turb, y_turb, z_turb]) * self.turbulence_intensity * self.wind_speed
         
         return turbulence
+        
+    def _calculate_tornado(self, position):
+        if not self.tornado_enabled:
+            return np.zeros(3)
+        # 2D position (ignore y for horizontal wind)
+        pos_2d = np.array([position[0], position[2]])
+        center_2d = np.array([self.tornado_center[0], self.tornado_center[2]])
+        rel = pos_2d - center_2d
+        dist = np.linalg.norm(rel)
+        if dist < 1e-3:
+            dist = 1e-3  # avoid division by zero
+
+        # Tangential direction (perpendicular to radius)
+        tangent = np.array([-rel[1], rel[0]]) / dist
+
+        # Wind speed profile: max at tornado_radius, drops off inside and outside
+        if dist < self.tornado_radius:
+            speed = self.tornado_strength * (dist / self.tornado_radius)
+        else:
+            speed = self.tornado_strength * np.exp(-(dist - self.tornado_radius) / self.tornado_radius)
+
+        # Horizontal wind (x, z)
+        wind_x = speed * tangent[0]
+        wind_z = speed * tangent[1]
+
+        # Updraft: strongest in center, fades out
+        updraft = self.tornado_updraft * np.exp(-dist / (self.tornado_radius * 0.7))
+
+        return np.array([wind_x, updraft, wind_z])
         
     def update_visual_indicators(self):
         """Update visual indicators in the stage"""
