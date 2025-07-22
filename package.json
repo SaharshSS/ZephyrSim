@@ -1,9 +1,10 @@
 {
   "name": "ZephyrSim",
-  "version": "1.8.0",
+  "version": "0.1.7",
   "packageManager": "yarn@4.9.1",
   "scripts": {
-    "release": "standard-version"
+    "release": "standard-version",
+    "postrelease": "git push --follow-tags && gh release create $(git describe --tags --abbrev=0) --title \"ZephyrSim $(git describe --tags --abbrev=0)\" --notes-file CHANGELOG.md"
   },
   "devDependencies": {
     "standard-version": "^9.5.0"

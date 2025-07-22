@@ -23,6 +23,26 @@ except ImportError as e:
     print("Running in simulation mode only")
     ISAAC_SIM_AVAILABLE = False
 
+import numpy as np
+import math
+try:
+    from noise import pnoise3
+except ImportError:
+    pnoise3 = None
+
+# --- Dryden turbulence helper ---
+def dryden_turbulence(dt, state, sigma_u=1.0, L_u=200.0, V=10.0):
+    # dt: timestep, state: dict with 'u', 'v', 'w', sigma_u: turbulence intensity, L_u: scale, V: mean wind
+    # Returns new state and turbulence vector
+    # See: https://en.wikipedia.org/wiki/Dryden_wind_turbulence_model
+    tau = L_u / V
+    phi = math.exp(-dt / tau)
+    noise = np.random.normal(0, 1, 3)
+    u = phi * state['u'] + sigma_u * math.sqrt(1 - phi**2) * noise[0]
+    v = phi * state['v'] + sigma_u * math.sqrt(1 - phi**2) * noise[1]
+    w = phi * state['w'] + sigma_u * math.sqrt(1 - phi**2) * noise[2]
+    return {'u': u, 'v': v, 'w': w}, np.array([u, v, w])
+
 class WindZone:
     """Represents a wind zone with configurable parameters"""
     
@@ -55,6 +75,27 @@ class WindZone:
         self.tornado_strength = 30.0      # max tangential wind speed (m/s)
         self.tornado_updraft = 15.0       # max updraft in center (m/s)
         self.tornado_enabled = False      # enable/disable tornado
+        
+        # Dryden turbulence state
+        self.dryden_state = {'u': 0.0, 'v': 0.0, 'w': 0.0}
+        self.dryden_sigma = 2.0  # turbulence intensity (m/s)
+        self.dryden_L = 200.0    # turbulence scale (m)
+        self.dryden_V = 10.0     # mean wind speed (m/s)
+        # Gust front/microburst
+        self.gustfront_enabled = False
+        self.gustfront_center = np.array([0,0,0])
+        self.gustfront_radius = 10.0
+        self.gustfront_strength = 15.0
+        self.gustfront_duration = 3.0
+        self.gustfront_time = 0.0
+        self.gustfront_active = False
+        self.microburst_enabled = False
+        self.microburst_center = np.array([0,0,0])
+        self.microburst_radius = 8.0
+        self.microburst_strength = 20.0
+        self.microburst_duration = 2.0
+        self.microburst_time = 0.0
+        self.microburst_active = False
         
     def set_wind_speed(self, speed):
         """Set wind speed in m/s"""
@@ -94,25 +135,70 @@ class WindZone:
         self.time += dt
         self.turbulence_time += dt
         
-        # Base wind vector
-        base_wind = self.wind_direction * self.wind_speed
-        
-        # Add gusts
-        gust_wind = self._calculate_gusts(dt)
-        
-        # Add turbulence
-        turbulence_wind = self._calculate_turbulence(position, dt)
-        
-        # Add tornado wind if enabled
+        # 1. Vertical wind profile (logarithmic)
+        z0 = 0.1  # surface roughness (m)
+        z_ref = 10.0
+        v_ref = self.wind_speed
+        z = max(0.1, position[1])
+        log_profile = v_ref * np.log(z/z0) / np.log(z_ref/z0)
+        base_wind = self.wind_direction * log_profile
+        # 2. Dryden turbulence
+        self.dryden_state, dryden_vec = dryden_turbulence(dt, self.dryden_state, self.dryden_sigma, self.dryden_L, self.dryden_V)
+        # 3. Gust front
+        gustfront_vec = np.zeros(3)
+        if self.gustfront_enabled:
+            dist = np.linalg.norm(position - self.gustfront_center)
+            if dist < self.gustfront_radius and not self.gustfront_active:
+                self.gustfront_active = True
+                self.gustfront_time = 0.0
+            if self.gustfront_active:
+                self.gustfront_time += dt
+                if self.gustfront_time < self.gustfront_duration:
+                    gustfront_vec = self.wind_direction * self.gustfront_strength * (1 - self.gustfront_time/self.gustfront_duration)
+                else:
+                    self.gustfront_active = False
+        # 4. Microburst
+        microburst_vec = np.zeros(3)
+        if self.microburst_enabled:
+            dist = np.linalg.norm(position - self.microburst_center)
+            if dist < self.microburst_radius and not self.microburst_active:
+                self.microburst_active = True
+                self.microburst_time = 0.0
+            if self.microburst_active:
+                self.microburst_time += dt
+                if self.microburst_time < self.microburst_duration:
+                    # Strong downdraft, then radial outflow
+                    down = -self.microburst_strength * (1 - self.microburst_time/self.microburst_duration)
+                    radial = (position - self.microburst_center)
+                    radial[1] = 0
+                    if np.linalg.norm(radial) > 1e-3:
+                        radial = radial / np.linalg.norm(radial)
+                    else:
+                        radial = np.zeros(3)
+                    outflow = self.microburst_strength * 0.5 * (self.microburst_time/self.microburst_duration) * radial
+                    microburst_vec = np.array([outflow[0], down, outflow[2]])
+                else:
+                    self.microburst_active = False
+        # 5. Perlin noise fallback
+        perlin_vec = np.zeros(3)
+        if pnoise3 is not None:
+            nx, ny, nz = position * 0.05
+            t = self.time * 0.1
+            perlin_vec = np.array([
+                2.0 * pnoise3(nx, ny, t),
+                2.0 * pnoise3(ny, nz, t + 100),
+                2.0 * pnoise3(nz, nx, t + 200)
+            ])
+        # 6. Tornado, turbulence, gusts, etc. (existing)
         tornado_wind = self._calculate_tornado(position)
-        
-        # Combine all wind components
-        total_wind = base_wind + gust_wind + turbulence_wind + tornado_wind
-        
-        # Apply distance falloff (wind decreases at zone edges)
+        gust_wind = self._calculate_gusts(dt)
+        turbulence_wind = self._calculate_turbulence(position, dt)
+        # Combine all
+        total_wind = base_wind + dryden_vec + gustfront_vec + microburst_vec + perlin_vec + tornado_wind + gust_wind + turbulence_wind
+        # Distance falloff
+        distance = np.linalg.norm(position - self.position)
         falloff = 1.0 - (distance / self.size) ** 2
         falloff = max(0.0, falloff)
-        
         return total_wind * falloff
         
     def _calculate_gusts(self, dt):
@@ -241,6 +327,38 @@ class WindZone:
                 transform.SetScale(Gf.Vec3d(scale, scale, scale))
                 omni.usd.set_world_transform_matrix(turb_prim, transform)
                 
+            # --- Tornado visualization ---
+            if self.tornado_enabled:
+                tornado_prim_path = f"/World/{self.zone_name}/TornadoVisual"
+                # Check if the tornado visual already exists
+                tornado_prim = prim_utils.get_prim_at_path(tornado_prim_path)
+                if not tornado_prim:
+                    # Create a cylinder to represent the tornado core
+                    prim_utils.create_prim(
+                        tornado_prim_path,
+                        "Cylinder",
+                        position=self.tornado_center.tolist(),
+                        attributes={
+                            "radius": self.tornado_radius,
+                            "height": 30.0,  # Height of tornado column
+                            "primvars:displayColor": [(0.7, 0.7, 1.0)]
+                        }
+                    )
+                else:
+                    # Update position and radius if tornado moves
+                    tornado_prim.GetAttribute("radius").Set(self.tornado_radius)
+                    tornado_prim.GetAttribute("height").Set(30.0)
+                    from pxr import Gf
+                    transform = Gf.Matrix4d()
+                    transform.SetTranslate(Gf.Vec3d(*self.tornado_center))
+                    omni.usd.set_world_transform_matrix(tornado_prim, transform)
+            else:
+                # Optionally, remove the tornado visual if disabled
+                tornado_prim_path = f"/World/{self.zone_name}/TornadoVisual"
+                tornado_prim = prim_utils.get_prim_at_path(tornado_prim_path)
+                if tornado_prim:
+                    stage_utils.remove_prim(tornado_prim_path)
+
         except Exception as e:
             print(f"⚠️ Error updating visual indicators: {e}")
             

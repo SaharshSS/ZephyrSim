@@ -26,20 +26,60 @@
 
 ---
 
-## 🌬️ ZephyrSim
+## ZephyrSim
 
 **ZephyrSim** is an open-source drone simulation environment built in **IsaacLab** and **OpenUSD**. It focuses on realistic aerial navigation through dynamic environments with wind, planes, and GPS imperfections—ideal for testing autonomous flight logic and perception systems.
 
 ---
 
-## ✨ Features
+## Features
 
-- 🛰️ Realistic drone flight with simulated GPS & IMU
-- 🌪️ Configurable wind zones and turbulence fields
-- ✈️ Simulated airspace with moving planes
-- 🎮 Path-planning with Python scripting
-- 📷 Sensor support: Coming soon!
-- 📡 ROS2-ready (optional) for real-world testing integration
+- Realistic drone flight with simulated GPS & IMU
+- Configurable wind zones and turbulence fields
+- Simulated airspace with moving planes
+- Path-planning with Python scripting
+- Sensor support: Coming soon!
+- ROS2-ready (optional) for real-world testing integration
+
+## Wind Physics Models
+
+### Vertical Wind Profile (Logarithmic Law)
+The mean wind speed at height $z$ is:
+
+$$
+v(z) = v_{ref} \frac{\ln(z/z_0)}{\ln(z_{ref}/z_0)}
+$$
+
+- $z_0$: surface roughness (m)
+- $v_{ref}$: wind speed at reference height $z_{ref}$
+- $z$: current height (m)
+
+This models how wind increases with altitude above the ground.
+
+---
+
+### Dryden Turbulence Model
+A standard model for simulating atmospheric turbulence in flight simulation:
+
+- Generates realistic, time-correlated wind fluctuations in all directions.
+- Used in aerospace and UAV research.
+- See: [Dryden Wind Turbulence Model (Wikipedia)](https://en.wikipedia.org/wiki/Dryden_wind_turbulence_model)
+
+---
+
+### Gust Fronts and Microbursts
+- **Gust Front:** Sudden, strong, short-lived increase in wind speed, often in the main wind direction.
+- **Microburst:** Localized, intense downdraft with outward radial wind at the surface.
+
+Both are modeled as time- and position-dependent wind events:
+- Gusts: $\vec{v}_{gust} = \vec{v}_{wind} \cdot S(t, d)$
+- Microburst: $\vec{v}_{microburst} = [\text{outflow}, \text{down}, \text{outflow}]$
+
+where $S(t, d)$ is a shape function of time and distance from the event center.
+
+---
+
+See the code for details and parameter tuning!
 
 ---
 
@@ -60,3 +100,5 @@ cd zephyrsim
 
 # Launch Isaac Sim and run the control script
 ./python.sh scripts/fly_to_waypoints.py
+
+```
