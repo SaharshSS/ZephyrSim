@@ -22,3 +22,16 @@ def tune_wind(controller):
         zone.tornado_radius = 8.0
         zone.tornado_strength = 40.0
         zone.tornado_updraft = 20.0
+        zone.dryden_sigma = 2.0      # turbulence intensity (m/s)
+        zone.dryden_L = 200.0        # turbulence scale (m)
+        zone.dryden_V = 10.0         # mean wind speed (m/s)
+        zone.gustfront_enabled = True
+        zone.gustfront_center = np.array([20, 5, 20])
+        zone.gustfront_radius = 12.0
+        zone.gustfront_strength = 18.0
+        zone.gustfront_duration = 2.0
+        zone.microburst_enabled = True
+        zone.microburst_center = np.array([10, 5, 10])
+        zone.microburst_radius = 8.0
+        zone.microburst_strength = 25.0
+        zone.microburst_duration = 1.5
