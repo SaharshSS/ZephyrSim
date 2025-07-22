@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.8](https://github.com/SaharshSS/ZephyrSim/compare/v1.8.0...v0.1.8) (2025-07-22)
+
+
+### Features
+
+* advanced physics models ([18a3b92](https://github.com/SaharshSS/ZephyrSim/commit/18a3b92db78bbc09f88be056cdcc855f0f0af7f5))
+
+
+### Bug Fixes
+
+* better tuning support ([0bdb93a](https://github.com/SaharshSS/ZephyrSim/commit/0bdb93a29d5fe226fec9293e3d5bea46fcdfc7e0))
+
 ## [1.8.0](https://github.com/SaharshSS/ZephyrSim/compare/v1.7.0...v1.8.0) (2025-07-22)
 
 
