@@ -9,6 +9,7 @@ import time
 import math
 import sys
 
+
 # Try to import Isaac Sim modules, with fallbacks
 try:
     import omni.isaac.core.utils.stage as stage_utils
@@ -25,7 +26,8 @@ except ImportError as e:
 
 # Import wind controller
 try:
-    from wind_controller import WindController
+    from scripts.wind_controller import WindController
+    from scripts.wind_tuning import tune_wind
     WIND_CONTROLLER_AVAILABLE = True
     print("✅ Wind controller loaded successfully")
 except ImportError as e:
@@ -213,6 +215,11 @@ def main():
         print("\n🌪️ Setting up wind conditions...")
         controller.wind_controller.create_preset_wind_conditions("moderate")
         print("✅ Moderate wind conditions applied")
+    
+    # Call wind tuning function
+    if controller.wind_controller:
+        tune_wind(controller.wind_controller)
+        print("✅ Wind tuning applied")
     
     # Simulation parameters
     dt = 0.016  # 60 FPS

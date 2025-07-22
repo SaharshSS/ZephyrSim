@@ -4,161 +4,148 @@
     defaultPrim = "WindZone"
 )
 
-def Xform "WindZone" (
-    kind = "component"
-)
-{
-    # Wind zone parameters
-    float wind_speed = 5.0  # m/s
-    float3 wind_direction = (1, 0, 0)  # Normalized direction vector
-    float turbulence_intensity = 0.1  # 0-1 scale
-    float wind_gust_frequency = 0.5  # Hz
-    float wind_gust_amplitude = 2.0  # m/s
-    
-    def Mesh "WindVolume" (
-        prepend apiSchemas = ["PhysicsCollisionAPI"]
-    )
-    {
-        float3[] extent = [(-5, -5, -5), (5, 5, 5)]
-        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4]
-        int[] faceVertexIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
-        point3f[] points = [(-5, -5, -5), (5, -5, -5), (5, 5, -5), (-5, 5, -5), (-5, -5, 5), (5, -5, 5), (5, 5, 5), (-5, 5, 5)]
-        color3f[] primvars:displayColor = [(0.2, 0.6, 0.8, 0.3)]
-        float3 xformOp:scale = (1, 1, 1)
-        uniform token[] xformOpOrder = ["xformOp:scale"]
-    }
-    
-    def Xform "WindDirection" (
-        prepend apiSchemas = ["PhysicsCollisionAPI"]
-    )
-    {
-        double3 xformOp:translate = (0, 0, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate"]
-        
-        def Cylinder "WindArrow" (
-            prepend apiSchemas = ["PhysicsCollisionAPI"]
-        )
-        {
-            float height = 8
-            float radius = 0.1
-            color3f[] primvars:displayColor = [(0.1, 0.4, 0.6)]
-        }
-        
-        def Cone "WindArrowHead" (
-            prepend apiSchemas = ["PhysicsCollisionAPI"]
-        )
-        {
-            double3 xformOp:translate = (4, 0, 0)
-            uniform token[] xformOpOrder = ["xformOp:translate"]
-            float height = 0.5
-            float radius = 0.2
-            color3f[] primvars:displayColor = [(0.1, 0.4, 0.6)]
-        }
-    }
-    
-    def Xform "WindParticles" (
-        prepend apiSchemas = ["PhysicsCollisionAPI"]
-    )
-    {
-        def Sphere "Particle1" (
-            prepend apiSchemas = ["PhysicsCollisionAPI"]
-        )
-        {
-            double3 xformOp:translate = (1, 0, 0)
-            uniform token[] xformOpOrder = ["xformOp:translate"]
-            float radius = 0.05
-            color3f[] primvars:displayColor = [(0.3, 0.7, 0.9)]
-        }
-        
-        def Sphere "Particle2" (
-            prepend apiSchemas = ["PhysicsCollisionAPI"]
-        )
-        {
-            double3 xformOp:translate = (-1, 1, 0)
-            uniform token[] xformOpOrder = ["xformOp:translate"]
-            float radius = 0.05
-            color3f[] primvars:displayColor = [(0.3, 0.7, 0.9)]
-        }
-        
-        def Sphere "Particle3" (
-            prepend apiSchemas = ["PhysicsCollisionAPI"]
-        )
-        {
-            double3 xformOp:translate = (0, -1, 1)
-            uniform token[] xformOpOrder = ["xformOp:translate"]
-            float radius = 0.05
-            color3f[] primvars:displayColor = [(0.3, 0.7, 0.9)]
-        }
-        
-        def Sphere "Particle4" (
-            prepend apiSchemas = ["PhysicsCollisionAPI"]
-        )
-        {
-            double3 xformOp:translate = (2, 0.5, -0.5)
-            uniform token[] xformOpOrder = ["xformOp:translate"]
-            float radius = 0.05
-            color3f[] primvars:displayColor = [(0.3, 0.7, 0.9)]
-        }
-        
-        def Sphere "Particle5" (
-            prepend apiSchemas = ["PhysicsCollisionAPI"]
-        )
-        {
-            double3 xformOp:translate = (-2, -0.5, 0.5)
-            uniform token[] xformOpOrder = ["xformOp:translate"]
-            float radius = 0.05
-            color3f[] primvars:displayColor = [(0.3, 0.7, 0.9)]
-        }
-    }
-    
-    def Xform "WindSpeedIndicator" (
-        prepend apiSchemas = ["PhysicsCollisionAPI"]
-    )
-    {
-        double3 xformOp:translate = (0, 0, 3)
-        uniform token[] xformOpOrder = ["xformOp:translate"]
-        
-        def Cylinder "SpeedBar" (
-            prepend apiSchemas = ["PhysicsCollisionAPI"]
-        )
-        {
-            float height = 2
-            float radius = 0.05
-            color3f[] primvars:displayColor = [(0.8, 0.2, 0.2)]
-        }
-        
-        def Sphere "SpeedIndicator" (
-            prepend apiSchemas = ["PhysicsCollisionAPI"]
-        )
-        {
-            double3 xformOp:translate = (0, 0.5, 0)
-            uniform token[] xformOpOrder = ["xformOp:translate"]
-            float radius = 0.1
-            color3f[] primvars:displayColor = [(1.0, 0.0, 0.0)]
-        }
-    }
-    
-    def Xform "TurbulenceIndicator" (
-        prepend apiSchemas = ["PhysicsCollisionAPI"]
-    )
-    {
-        double3 xformOp:translate = (0, 0, -3)
-        uniform token[] xformOpOrder = ["xformOp:translate"]
-        
-        def Sphere "TurbulenceSphere" (
-            prepend apiSchemas = ["PhysicsCollisionAPI"]
-        )
-        {
-            float radius = 0.8
-            color3f[] primvars:displayColor = [(0.8, 0.8, 0.2, 0.5)]
-        }
-        
-        def Sphere "TurbulenceCore" (
-            prepend apiSchemas = ["PhysicsCollisionAPI"]
-        )
-        {
-            float radius = 0.3
-            color3f[] primvars:displayColor = [(1.0, 1.0, 0.0)]
-        }
-    }
-} 
+from noise import pnoise3  # Add this import at the top
+
+class WindZone:
+    """Represents a wind zone with advanced, spatially and temporally varying wind."""
+
+    def __init__(self, zone_name, position, size=10.0):
+        self.zone_name = zone_name
+        self.position = np.array(position)
+        self.size = size
+
+        # Wind parameters
+        self.wind_speed = 5.0  # m/s
+        self.wind_direction = np.array([1.0, 0.0, 0.0])  # Normalized direction
+        self.turbulence_intensity = 0.1  # 0-1 scale
+        self.wind_gust_frequency = 0.5  # Hz
+        self.wind_gust_amplitude = 2.0  # m/s
+        self.wind_gust_duration = 2.0  # seconds
+
+        # Advanced wind field parameters
+        self.noise_scale = 0.05         # Controls spatial frequency of wind variation
+        self.noise_amplitude = 2.0      # Max wind variation (m/s)
+        self.noise_time_speed = 0.1     # How fast wind field evolves
+
+        # Updraft region (example: hill at (0,0), radius 10m)
+        self.updraft_center = np.array([0, 0, 0])
+        self.updraft_radius = 10.0
+        self.updraft_strength = 2.0     # m/s vertical at center
+
+        # Wind shear layer (example: at y=10)
+        self.shear_y = 10.0
+        self.shear_thickness = 2.0
+        self.shear_vector = np.array([3.0, 0, 0])  # sudden eastward gust
+
+        # Time tracking
+        self.time = 0.0
+        self.last_gust_time = 0.0
+        self.gust_active = False
+        self.gust_start_time = 0.0
+        self.turbulence_time = 0.0
+
+    def set_wind_speed(self, speed):
+        self.wind_speed = max(0.0, speed)
+        print(f"🌪️ {self.zone_name}: Wind speed set to {self.wind_speed} m/s")
+
+    def set_wind_direction(self, direction):
+        direction = np.array(direction)
+        magnitude = np.linalg.norm(direction)
+        if magnitude > 0:
+            self.wind_direction = direction / magnitude
+            print(f"🧭 {self.zone_name}: Wind direction set to {self.wind_direction}")
+        else:
+            print(f"⚠️ {self.zone_name}: Invalid wind direction vector")
+
+    def set_turbulence_intensity(self, intensity):
+        self.turbulence_intensity = max(0.0, min(1.0, intensity))
+        print(f"🌀 {self.zone_name}: Turbulence intensity set to {self.turbulence_intensity}")
+
+    def set_wind_gusts(self, frequency, amplitude, duration):
+        self.wind_gust_frequency = max(0.0, frequency)
+        self.wind_gust_amplitude = max(0.0, amplitude)
+        self.wind_gust_duration = max(0.1, duration)
+        print(f"💨 {self.zone_name}: Gusts set to {frequency}Hz, {amplitude}m/s, {duration}s")
+
+    def get_wind_vector_at_position(self, position, dt):
+        # Check if position is within wind zone
+        distance = np.linalg.norm(position - self.position)
+        if distance > self.size:
+            return np.zeros(3)
+
+        # Update time
+        self.time += dt
+        self.turbulence_time += dt
+
+        # Base wind
+        base = self.wind_direction * self.wind_speed
+
+        # 3D Perlin noise for spatial and temporal variation
+        nx, ny, nz = position * self.noise_scale
+        t = self.time * self.noise_time_speed
+
+        wind_x = base[0] + self.noise_amplitude * pnoise3(nx, ny, t)
+        wind_y = base[1] + self.noise_amplitude * pnoise3(ny, nz, t + 100)
+        wind_z = base[2] + self.noise_amplitude * pnoise3(nz, nx, t + 200)
+        wind = np.array([wind_x, wind_y, wind_z])
+
+        # Add updraft if within updraft region
+        dist_to_updraft = np.linalg.norm(position[[0,2]] - self.updraft_center[[0,2]])
+        if dist_to_updraft < self.updraft_radius:
+            updraft = (1 - dist_to_updraft / self.updraft_radius) * self.updraft_strength
+            wind[1] += updraft
+
+        # Add wind shear if within shear layer
+        if abs(position[1] - self.shear_y) < self.shear_thickness / 2:
+            wind += self.shear_vector
+
+        # Add gusts (optional, can be combined with noise)
+        gust = self._calculate_gusts(dt)
+        wind += gust
+
+        # Add turbulence (optional, can be combined with noise)
+        turbulence = self._calculate_turbulence(position, dt)
+        wind += turbulence
+
+        # Distance falloff (wind decreases at zone edges)
+        falloff = 1.0 - (distance / self.size) ** 2
+        falloff = max(0.0, falloff)
+        return wind * falloff
+
+    def _calculate_gusts(self, dt):
+        if self.wind_gust_amplitude <= 0:
+            return np.zeros(3)
+        if not self.gust_active and (self.time - self.last_gust_time) > (1.0 / self.wind_gust_frequency):
+            self.gust_active = True
+            self.gust_start_time = self.time
+            self.last_gust_time = self.time
+        gust_strength = 0.0
+        if self.gust_active:
+            gust_age = self.time - self.gust_start_time
+            if gust_age < self.wind_gust_duration:
+                if gust_age < 0.2:
+                    gust_strength = gust_age / 0.2
+                else:
+                    gust_strength = 1.0 - ((gust_age - 0.2) / (self.wind_gust_duration - 0.2))
+                gust_strength = max(0.0, gust_strength)
+            else:
+                self.gust_active = False
+        return self.wind_direction * self.wind_gust_amplitude * gust_strength
+
+    def _calculate_turbulence(self, position, dt):
+        if self.turbulence_intensity <= 0:
+            return np.zeros(3)
+        # Simple turbulence using sine waves at different frequencies
+        x_turb = (math.sin(self.turbulence_time * 2.1) * 0.5 +
+                  math.sin(self.turbulence_time * 3.7) * 0.3 +
+                  math.sin(self.turbulence_time * 5.3) * 0.2)
+        y_turb = (math.sin(self.turbulence_time * 1.9) * 0.5 +
+                  math.sin(self.turbulence_time * 4.1) * 0.3 +
+                  math.sin(self.turbulence_time * 6.7) * 0.2)
+        z_turb = (math.sin(self.turbulence_time * 2.7) * 0.5 +
+                  math.sin(self.turbulence_time * 3.3) * 0.3 +
+                  math.sin(self.turbulence_time * 4.9) * 0.2)
+        turbulence = np.array([x_turb, y_turb, z_turb]) * self.turbulence_intensity * self.wind_speed
+        return turbulence
+
+    # ... (keep your update_visual_indicators and other methods unchanged) 
