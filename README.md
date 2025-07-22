@@ -14,7 +14,7 @@
     <img alt="Issues" src="https://img.shields.io/github/issues/SaharshSS/ZephyrSim">
   </a>
   <a href="https://github.com/SaharshSS/ZephyrSim/blob/main/LICENSE">
-    <img alt="License" src="https://img.shields.io/github/license/SaharshSS/ZephyrSim">
+    <img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache%202.0-blue.svg">
   </a>
   <img alt="Status" src="https://img.shields.io/badge/status-WIP-yellow">
   <img alt="Last Commit" src="https://img.shields.io/github/last-commit/SaharshSS/ZephyrSim">
