@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/SaharshSS/ZephyrSim/compare/v1.7.0...v1.8.0) (2025-07-22)
+
+
+### Features
+
+* tornadoes added ([d6692f1](https://github.com/SaharshSS/ZephyrSim/commit/d6692f1b7fc898c13eb1551849475ba68c60e627))
+
 ## [1.7.0](https://github.com/SaharshSS/ZephyrSim/compare/v0.1.7...v1.7.0) (2025-07-22)
 
 ### [0.1.7](https://github.com/SaharshSS/ZephyrSim/compare/v0.1.6...v0.1.7) (2025-07-22)
