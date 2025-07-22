@@ -24,7 +24,7 @@
 
 ## 🌬️ ZephyrSim
 
-**ZephyrSim** is an open-source drone simulation environment built in **NVIDIA Omniverse** and **OpenUSD**. It focuses on realistic aerial navigation through dynamic environments with wind, planes, and GPS imperfections—ideal for testing autonomous flight logic and perception systems.
+**ZephyrSim** is an open-source drone simulation environment built in **IsaacLab** and **OpenUSD**. It focuses on realistic aerial navigation through dynamic environments with wind, planes, and GPS imperfections—ideal for testing autonomous flight logic and perception systems.
 
 ---
 
@@ -34,7 +34,7 @@
 - 🌪️ Configurable wind zones and turbulence fields
 - ✈️ Simulated airspace with moving planes
 - 🎮 Path-planning with Python scripting
-- 📷 Sensor support: RGB camera, depth, LIDAR, and noise modeling
+- 📷 Sensor support: Coming soon!
 - 📡 ROS2-ready (optional) for real-world testing integration
 
 ---
