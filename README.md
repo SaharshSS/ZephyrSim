@@ -100,5 +100,47 @@ cd zephyrsim
 
 # Launch Isaac Sim and run the control script
 ./python.sh scripts/fly_to_waypoints.py
-
 ```
+
+---
+
+## 📚 Documentation
+
+Comprehensive documentation is available for all APIs, components, and usage patterns:
+
+- **[🚀 Quick Reference](QUICK_REFERENCE.md)** - Essential commands and parameters cheat sheet
+- **[📖 API Documentation](API_DOCUMENTATION.md)** - Complete API reference with examples  
+- **[🔧 Component Reference](COMPONENT_REFERENCE.md)** - Detailed component analysis and implementation
+- **[💡 Usage Examples](USAGE_EXAMPLES.md)** - Tutorials, patterns, and practical examples
+
+### Quick Example
+```python
+# Basic flight control
+from scripts.fly_to_waypoints import DroneController
+
+controller = DroneController()
+controller.set_target([10, 8, 5])  # x, y, z in meters
+
+while True:
+    result = controller.calculate_control(0.016)  # 60 FPS
+    if result['target_reached']:
+        print("Destination reached!")
+        break
+```
+
+For wind effects, advanced flight patterns, and more examples, see the [Usage Examples](USAGE_EXAMPLES.md).
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please refer to our documentation:
+- **API Guidelines**: [API Documentation](API_DOCUMENTATION.md)
+- **Component Structure**: [Component Reference](COMPONENT_REFERENCE.md) 
+- **Code Examples**: [Usage Examples](USAGE_EXAMPLES.md)
+
+---
+
+## 📄 License
+
+This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details.
