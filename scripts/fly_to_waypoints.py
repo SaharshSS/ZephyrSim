@@ -61,6 +61,26 @@ class DroneController:
             self.wind_controller.add_wind_zone("WindZone1", [20, 10, 0], 10.0)
             self.wind_controller.add_wind_zone("WindZone2", [-15, 15, 30], 12.0)
             print("🌪️ Wind zones initialized")
+
+    def compute_air_density(self, altitude_m):
+        """Returns air density (kg/m³) at a given altitude in meters"""
+        # Barometric formula approximation (valid up to ~11km)
+        sea_level_density = 1.225  # kg/m³ at 0 m
+        temp_lapse_rate = 0.0065   # K/m
+        sea_level_temp = 288.15    # K (15°C)
+        gas_constant = 8.31447     # J/(mol·K)
+        molar_mass = 0.0289644     # kg/mol
+        gravity = 9.80665          # m/s²
+
+        if altitude_m < 0:
+            altitude_m = 0
+
+        temp = sea_level_temp - temp_lapse_rate * altitude_m
+        exponent = (gravity * molar_mass) / (8.31447 * temp_lapse_rate)
+        density = sea_level_density * (temp / sea_level_temp) ** (exponent - 1)
+
+        return density
+
         
     def set_target(self, target_position):
         """Set the target waypoint position"""
@@ -87,7 +107,7 @@ class DroneController:
         """Calculate wind force on the drone"""
         if not self.wind_controller:
             return np.zeros(3)
-            
+        
         # Get wind vector at drone position
         wind_velocity = self.wind_controller.get_wind_at_position(position)
         
@@ -95,11 +115,15 @@ class DroneController:
         relative_velocity = velocity - wind_velocity
         
         # Calculate drag force
+        altitude = position[1]
+        air_density = self.compute_air_density(altitude)
+
         relative_speed = np.linalg.norm(relative_velocity)
         if relative_speed > 0:
-            drag_force = -0.5 * self.air_density * self.drag_coefficient * self.cross_sectional_area * relative_speed * relative_velocity
+            drag_force = -0.5 * air_density * self.drag_coefficient * self.cross_sectional_area * relative_speed * relative_velocity
         else:
             drag_force = np.zeros(3)
+
             
         # Add wind force (simplified)
         wind_force = wind_velocity * self.mass * 0.1  # Wind affects drone like a force
@@ -148,24 +172,35 @@ class DroneController:
             if self.wind_controller:
                 self.wind_controller.update()
             
+            altitude = current_pos[1]
+            air_density = self.compute_air_density(altitude)
+
             return {
                 'position': self.current_position,
                 'velocity': self.current_velocity,
                 'target_reached': False,
                 'distance': distance,
                 'wind_force': wind_force,
-                'control_acceleration': control_acceleration
+                'control_acceleration': control_acceleration,
+                'altitude': altitude,
+                'air_density': air_density
             }
+
         else:
             # Target reached, stop
             self.current_velocity = np.zeros(3)
+            altitude = current_pos[1]
+            air_density = self.compute_air_density(altitude)
+
             return {
                 'position': self.current_position,
                 'velocity': self.current_velocity,
                 'target_reached': True,
                 'distance': distance,
                 'wind_force': np.zeros(3),
-                'control_acceleration': np.zeros(3)
+                'control_acceleration': np.zeros(3),
+                'altitude': altitude,
+                'air_density': air_density
             }
     
     def update_drone_position(self, new_position):
@@ -183,7 +218,7 @@ class DroneController:
             except Exception as e:
                 print(f"⚠️  Error updating drone position in stage: {e}")
 
-def print_status(waypoint_index, total_waypoints, position, distance, velocity, wind_force, control_acc):
+def print_status(waypoint_index, total_waypoints, position, distance, velocity, wind_force, control_acc, altitude, air_density):
     """Print formatted status information"""
     print(f"📍 Waypoint {waypoint_index + 1}/{total_waypoints}")
     print(f"   Position: [{position[0]:6.2f}, {position[1]:6.2f}, {position[2]:6.2f}]")
@@ -191,6 +226,8 @@ def print_status(waypoint_index, total_waypoints, position, distance, velocity, 
     print(f"   Velocity: [{velocity[0]:6.2f}, {velocity[1]:6.2f}, {velocity[2]:6.2f}] m/s")
     print(f"   Wind Force: [{wind_force[0]:6.2f}, {wind_force[1]:6.2f}, {wind_force[2]:6.2f}] N")
     print(f"   Control Acc: [{control_acc[0]:6.2f}, {control_acc[1]:6.2f}, {control_acc[2]:6.2f}] m/s²")
+    print(f"   Altitude: {altitude:.2f} m")
+    print(f"   Air Density: {air_density:.4f} kg/m³")
 
 def main():
     """Main function to run waypoint navigation with wind effects"""
@@ -264,11 +301,14 @@ def main():
             frame_count += 1
             if frame_count % 60 == 0:
                 print_status(waypoint_index, len(waypoints), 
-                           control_result['position'], 
-                           control_result['distance'],
-                           control_result['velocity'],
-                           control_result['wind_force'],
-                           control_result['control_acceleration'])
+                    control_result['position'], 
+                    control_result['distance'],
+                    control_result['velocity'],
+                    control_result['wind_force'],
+                    control_result['control_acceleration'],
+                    control_result['altitude'],
+                    control_result['air_density'])
+
             
             # Simulate time step
             time.sleep(dt)
