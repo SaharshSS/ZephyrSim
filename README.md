@@ -79,6 +79,37 @@ where $S(t, d)$ is a shape function of time and distance from the event center.
 
 ---
 
+### Air Density and Altitude Simulation
+ZephyrSim models air density variations with altitude using the barometric formula, which is critical for realistic drag and wind force calculations. The air density $\rho$ (kg/m³) at altitude $h$ (meters) is calculated as:
+
+$$
+\rho(h) = \rho_0 \left( \frac{T_0 - L \cdot h}{T_0} \right)^{\frac{g \cdot M}{R \cdot L} - 1}
+$$
+
+Where:
+- $\rho_0 = 1.225$ kg/m³ (sea-level air density)
+- $T_0 = 288.15$ K (sea-level temperature, 15°C)
+- $L = 0.0065$ K/m (temperature lapse rate)
+- $g = 9.80665$ m/s² (gravitational acceleration)
+- $M = 0.0289644$ kg/mol (molar mass of air)
+- $R = 8.31447$ J/(mol·K) (gas constant)
+- $h$: altitude (m, clamped to $\geq 0$)
+
+This model approximates air density changes up to approximately 11 km, accounting for temperature decrease with altitude. The calculated air density is used in drag force computations:
+
+$$
+\vec{F}_{drag} = -0.5 \cdot \rho(h) \cdot C_d \cdot A \cdot |\vec{v}_{rel}| \cdot \vec{v}_{rel}
+$$
+
+Where:
+- $C_d = 0.3$ (drag coefficient)
+- $A = 0.1$ m² (cross-sectional area)
+- $\vec{v}_{rel}$: relative velocity between drone and wind
+
+This ensures realistic simulation of wind effects on the drone at varying altitudes.
+
+---
+
 See the code for details and parameter tuning!
 
 ---
