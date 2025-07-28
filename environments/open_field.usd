@@ -1,7 +1,10 @@
 #usda 1.0
 (
-    "ZephyrSim Open Field Environment"
+    "ZephyrSim Open Field Environment with Hills, Ponds, and Drifting Clouds"
     defaultPrim = "OpenField"
+    startTimeCode = 0
+    endTimeCode = 240
+    timeCodesPerSecond = 24
 )
 
 def Xform "OpenField" (
@@ -21,6 +24,85 @@ def Xform "OpenField" (
         uniform token[] xformOpOrder = ["xformOp:scale"]
     }
     
+    def Mesh "Hill1" (
+        prepend apiSchemas = ["PhysicsCollisionAPI"]
+    )
+    {
+        double3 xformOp:translate = (30, 0, -20)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        point3f[] points = [
+            (-10, 0, -10), (10, 0, -10), (10, 0, 10), (-10, 0, 10),
+            (-8, 2, -8), (8, 2, -8), (8, 2, 8), (-8, 2, 8),
+            (0, 5, 0)  # Peak
+        ]
+        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [
+            0, 1, 5, 4,  # Bottom to mid
+            1, 2, 6, 5,  # Bottom to mid
+            2, 3, 7, 6,  # Bottom to mid
+            3, 0, 4, 7,  # Bottom to mid
+            4, 5, 8, 4,  # Mid to peak
+            5, 6, 8, 5,  # Mid to peak
+            6, 7, 8, 6,  # Mid to peak
+            7, 4, 8, 7   # Mid to peak
+        ]
+        color3f[] primvars:displayColor = [(0.3, 0.5, 0.2)]
+    }
+    
+    def Mesh "Hill2" (
+        prepend apiSchemas = ["PhysicsCollisionAPI"]
+    )
+    {
+        double3 xformOp:translate = (-40, 0, 30)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        point3f[] points = [
+            (-12, 0, -12), (12, 0, -12), (12, 0, 12), (-12, 0, 12),
+            (-9, 1.5, -9), (9, 1.5, -9), (9, 1.5, 9), (-9, 1.5, 9),
+            (0, 4, 0)  # Peak
+        ]
+        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [
+            0, 1, 5, 4,  # Bottom to mid
+            1, 2, 6, 5,  # Bottom to mid
+            2, 3, 7, 6,  # Bottom to mid
+            3, 0, 4, 7,  # Bottom to mid
+            4, 5, 8, 4,  # Mid to peak
+            5, 6, 8, 5,  # Mid to peak
+            6, 7, 8, 6,  # Mid to peak
+            7, 4, 8, 7   # Mid to peak
+        ]
+        color3f[] primvars:displayColor = [(0.3, 0.5, 0.2)]
+    }
+    
+    def Xform "Ponds" (
+        prepend apiSchemas = ["PhysicsCollisionAPI"]
+    )
+    {
+        def Mesh "Pond1" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            double3 xformOp:translate = (25, 0.1, -15)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+            point3f[] points = [(-5, 0, -5), (5, 0, -5), (5, 0, 5), (-5, 0, 5)]
+            int[] faceVertexCounts = [4]
+            int[] faceVertexIndices = [0, 1, 2, 3]
+            color3f[] primvars:displayColor = [(0.1, 0.3, 0.7)]
+        }
+        
+        def Mesh "Pond2" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            double3 xformOp:translate = (-35, 0.1, 25)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+            point3f[] points = [(-4, 0, -4), (4, 0, -4), (4, 0, 4), (-4, 0, 4)]
+            int[] faceVertexCounts = [4]
+            int[] faceVertexIndices = [0, 1, 2, 3]
+            color3f[] primvars:displayColor = [(0.1, 0.3, 0.7)]
+        }
+    }
+    
     def Xform "Sky" (
         prepend apiSchemas = ["PhysicsCollisionAPI"]
     )
@@ -31,6 +113,57 @@ def Xform "OpenField" (
         {
             float radius = 200
             color3f[] primvars:displayColor = [(0.5, 0.7, 1.0)]
+        }
+        
+        def Sphere "Cloud1" ()
+        {
+            timeSamples {
+                0: {
+                    double3 xformOp:translate = (50, 100, 30)
+                }
+                240: {
+                    double3 xformOp:translate = (70, 100, 30)  # Moves 20 units along x over 10 seconds
+                }
+            }
+            float3 xformOp:scale = (10, 5, 10)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            float radius = 1
+            color3f[] primvars:displayColor = [(0.9, 0.9, 0.95)]
+            float primvars:displayOpacity = 0.8
+        }
+        
+        def Sphere "Cloud2" ()
+        {
+            timeSamples {
+                0: {
+                    double3 xformOp:translate = (-40, 90, -50)
+                }
+                240: {
+                    double3 xformOp:translate = (-20, 90, -50)  # Moves 20 units along x over 10 seconds
+                }
+            }
+            float3 xformOp:scale = (12, 4, 8)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            float radius = 1
+            color3f[] primvars:displayColor = [(0.9, 0.9, 0.95)]
+            float primvars:displayOpacity = 0.8
+        }
+        
+        def Sphere "Cloud3" ()
+        {
+            timeSamples {
+                0: {
+                    double3 xformOp:translate = (20, 95, 60)
+                }
+                240: {
+                    double3 xformOp:translate = (40, 95, 60)  # Moves 20 units along x over 10 seconds
+                }
+            }
+            float3 xformOp:scale = (8, 3, 10)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            float radius = 1
+            color3f[] primvars:displayColor = [(0.9, 0.9, 0.95)]
+            float primvars:displayOpacity = 0.8
         }
     }
     
@@ -117,4 +250,4 @@ def Xform "OpenField" (
             color3f[] primvars:displayColor = [(0.4, 0.4, 0.4)]
         }
     }
-} 
+}
