@@ -1,91 +1,173 @@
 #usda 1.0
 (
-    "ZephyrSim Drone Asset"
+    doc = "Enhanced ZephyrSim Drone Asset with detailed geometry, materials, animation, and physics"
     defaultPrim = "Drone"
+    metersPerUnit = 1
+    timeCodesPerSecond = 24
+    startTimeCode = 0
+    endTimeCode = 240
 )
 
 def Xform "Drone" (
     kind = "component"
+    prepend apiSchemas = ["PhysicsRigidBodyAPI"]
 )
 {
+    double3 xformOp:translate = (0, 1, 0)  # Start 1m above ground
+    uniform token[] xformOpOrder = ["xformOp:translate"]
+
     def Mesh "Body" (
-        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsRigidBodyAPI"]
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMassAPI"]
     )
     {
-        float3[] extent = [(-0.2, -0.1, -0.2), (0.2, 0.1, 0.2)]
-        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4]
-        int[] faceVertexIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
-        point3f[] points = [(-0.2, -0.1, -0.2), (0.2, -0.1, -0.2), (0.2, 0.1, -0.2), (-0.2, 0.1, -0.2), (-0.2, -0.1, 0.2), (0.2, -0.1, 0.2), (0.2, 0.1, 0.2), (-0.2, 0.1, 0.2)]
-        color3f[] primvars:displayColor = [(0.2, 0.2, 0.2)]
-        float3 xformOp:scale = (1, 1, 1)
-        uniform token[] xformOpOrder = ["xformOp:scale"]
+        float3[] extent = [(-0.25, -0.15, -0.25), (0.25, 0.15, 0.25)]  # Slightly larger, rounded chassis
+        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]  # More faces for smoother shape
+        int[] faceVertexIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
+        point3f[] points = [
+            (-0.25, -0.15, -0.25), (0.25, -0.15, -0.25), (0.25, 0.15, -0.25), (-0.25, 0.15, -0.25),
+            (-0.25, -0.15, 0.25), (0.25, -0.15, 0.25), (0.25, 0.15, 0.25), (-0.25, 0.15, 0.25),
+            (-0.2, -0.1, -0.2), (0.2, -0.1, -0.2), (0.2, 0.1, -0.2), (-0.2, 0.1, -0.2)  # Additional points for rounded edges
+        ]
+        color3f[] primvars:displayColor = [(0.3, 0.3, 0.3)]  # Darker gray fallback
+        float mass = 1.0  # 1kg for body
+        rel material:binding = </Drone/Materials/DroneBodyMaterial>
     }
-    
+
     def Xform "Propeller1" (
-        prepend apiSchemas = ["PhysicsCollisionAPI"]
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMassAPI", "PhysicsRevoluteJointAPI"]
     )
     {
-        double3 xformOp:translate = (0.3, 0.3, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate"]
-        
-        def Cylinder "Propeller" (
+        double3 xformOp:translate = (0.3, 0.15, 0)
+        float3 xformOp:rotateXYZ.timeSamples = {
+            0: (0, 0, 0),
+            24: (0, 0, 360)  # One rotation per second
+        }
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+        float mass = 0.05  # 50g per propeller
+        rel joint:revolute:body0 = </Drone/Body>  # Connect to body
+        float joint:revolute:axis = 0  # Rotate around Z-axis
+
+        def Cone "Propeller" (
             prepend apiSchemas = ["PhysicsCollisionAPI"]
         )
         {
-            float height = 0.02
+            float height = 0.03  # Taller, tapered blades
             float radius = 0.15
-            color3f[] primvars:displayColor = [(0.8, 0.8, 0.8)]
+            color3f[] primvars:displayColor = [(0.9, 0.9, 0.9)]  # Light gray fallback
+            rel material:binding = </Drone/Materials/PropellerMaterial>
         }
     }
-    
+
     def Xform "Propeller2" (
-        prepend apiSchemas = ["PhysicsCollisionAPI"]
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMassAPI", "PhysicsRevoluteJointAPI"]
     )
     {
-        double3 xformOp:translate = (-0.3, 0.3, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate"]
-        
-        def Cylinder "Propeller" (
+        double3 xformOp:translate = (-0.3, 0.15, 0)
+        float3 xformOp:rotateXYZ.timeSamples = {
+            0: (0, 0, 0),
+            24: (0, 0, -360)  # Counter-rotation
+        }
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+        float mass = 0.05
+        rel joint:revolute:body0 = </Drone/Body>
+        float joint:revolute:axis = 0
+
+        def Cone "Propeller" (
             prepend apiSchemas = ["PhysicsCollisionAPI"]
         )
         {
-            float height = 0.02
+            float height = 0.03
             float radius = 0.15
-            color3f[] primvars:displayColor = [(0.8, 0.8, 0.8)]
+            color3f[] primvars:displayColor = [(0.9, 0.9, 0.9)]
+            rel material:binding = </Drone/Materials/PropellerMaterial>
         }
     }
-    
+
     def Xform "Propeller3" (
-        prepend apiSchemas = ["PhysicsCollisionAPI"]
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMassAPI", "PhysicsRevoluteJointAPI"]
     )
     {
-        double3 xformOp:translate = (0.3, -0.3, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate"]
-        
-        def Cylinder "Propeller" (
+        double3 xformOp:translate = (0.3, -0.15, 0)
+        float3 xformOp:rotateXYZ.timeSamples = {
+            0: (0, 0, 0),
+            24: (0, 0, 360)
+        }
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+        float mass = 0.05
+        rel joint:revolute:body0 = </Drone/Body>
+        float joint:revolute:axis = 0
+
+        def Cone "Propeller" (
             prepend apiSchemas = ["PhysicsCollisionAPI"]
         )
         {
-            float height = 0.02
+            float height = 0.03
             float radius = 0.15
-            color3f[] primvars:displayColor = [(0.8, 0.8, 0.8)]
+            color3f[] primvars:displayColor = [(0.9, 0.9, 0.9)]
+            rel material:binding = </Drone/Materials/PropellerMaterial>
         }
     }
-    
+
     def Xform "Propeller4" (
-        prepend apiSchemas = ["PhysicsCollisionAPI"]
+        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMassAPI", "PhysicsRevoluteJointAPI"]
     )
     {
-        double3 xformOp:translate = (-0.3, -0.3, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate"]
-        
-        def Cylinder "Propeller" (
+        double3 xformOp:translate = (-0.3, -0.15, 0)
+        float3 xformOp:rotateXYZ.timeSamples = {
+            0: (0, 0, -360),
+            24: (0, 0, 0)
+        }
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+        float mass = 0.05
+        rel joint:revolute:body0 = </Drone/Body>
+        float joint:revolute:axis = 0
+
+        def Cone "Propeller" (
             prepend apiSchemas = ["PhysicsCollisionAPI"]
         )
         {
-            float height = 0.02
+            float height = 0.03
             float radius = 0.15
-            color3f[] primvars:displayColor = [(0.8, 0.8, 0.8)]
+            color3f[] primvars:displayColor = [(0.9, 0.9, 0.9)]
+            rel material:binding = </Drone/Materials/PropellerMaterial>
         }
     }
-} 
+
+    def Camera "DroneCamera"
+    {
+        float focalLength = 24
+        float focusDistance = 10
+        double3 xformOp:translate = (0, 0.2, 0.5)  # Above and forward
+        float3 xformOp:rotateXYZ = (30, 0, 0)  # Tilt down
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ"]
+    }
+
+    def Xform "Materials"
+    {
+        def Material "DroneBodyMaterial"
+        {
+            token outputs:mdl:surface.connect = </Drone/Materials/DroneBodyMaterial/Shader.outputs:out>
+            def Shader "Shader"
+            {
+                uniform token info:mdlModule = "OmniPBR"
+                color3f inputs:base_color = (0.3, 0.3, 0.3)
+                float inputs:metallic = 0.8
+                float inputs:roughness = 0.2
+                float inputs:specular = 0.5
+            }
+        }
+
+        def Material "PropellerMaterial"
+        {
+            token outputs:mdl:surface.connect = </Drone/Materials/PropellerMaterial/Shader.outputs:out>
+            def Shader "Shader"
+            {
+                uniform token info:mdlModule = "OmniGlass"
+                float inputs:roughness = 0.1
+                float inputs:refraction = 1.4
+                color3f inputs:color = (0.9, 0.9, 0.9)
+                float inputs:opacity = 0.7
+            }
+        }
+    }
+}
